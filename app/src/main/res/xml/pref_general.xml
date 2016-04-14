@@ -1,0 +1,72 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_hostname"
+        android:inputType="text"
+        android:key="router_hostname"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_router_hostname" />
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_port"
+        android:inputType="numberDecimal"
+        android:key="router_port"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_router_port" />
+
+    <EditTextPreference
+        android:key="@string/wifi_name_prefix"
+        android:maxLines="1"
+        android:defaultValue="ZIP-"
+        android:inputType="text"
+        android:persistent="true"
+        android:singleLine="true"
+        android:title="WiFi domain prefix"/>
+
+    <EditTextPreference
+        android:key="@string/zip_config_password"
+        android:maxLines="1"
+        android:defaultValue=""
+        android:inputType="textPassword"
+        android:persistent="true"
+        android:title="Config Password"/>
+    <EditTextPreference
+        android:key="@string/zip_wifi_password"
+        android:maxLines="1"
+        android:defaultValue=""
+        android:inputType="textPassword"
+        android:persistent="true"
+        android:title="ZIP WiFi Password"/>
+    <EditTextPreference
+            android:key="@string/zip_proxy_hostname"
+            android:maxLines="1"
+            android:defaultValue=""
+            android:inputType="text"
+            android:persistent="true"
+            android:title="Proxy Hostname"/>
+    <EditTextPreference
+            android:key="@string/zip_proxy_port"
+            android:maxLines="1"
+            android:defaultValue=""
+            android:inputType="number"
+            android:persistent="true"
+            android:title="Proxy Port"/>
+    <EditTextPreference
+            android:key="@string/zip_proxy_username"
+            android:maxLines="1"
+            android:defaultValue=""
+            android:inputType="text"
+            android:persistent="true"
+            android:title="Proxy Username"/>
+    <EditTextPreference
+            android:key="@string/zip_proxy_password"
+            android:maxLines="1"
+            android:defaultValue=""
+            android:inputType="textPassword"
+            android:persistent="true"
+            android:title="Proxy Password"/>
+</PreferenceScreen>
