@@ -28,6 +28,7 @@
                 android:layout_weight="0.1"
                 android:fadingEdge="vertical"
                 android:onClick="onBtnScan"
-                android:text="@string/button_scan"/>
+                android:text="@string/button_scan"
+                android:textStyle="bold"/>
 </LinearLayout >
 
