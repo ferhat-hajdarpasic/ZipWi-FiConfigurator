@@ -366,8 +366,12 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
     }
 
     public String getStringPreference(int preferenceId, String defaultValue) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String preferenceValue = getKey(preferenceId);
-        return sharedPrefs.getString(preferenceValue, defaultValue);
+        try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String preferenceValue = getKey(preferenceId);
+            return sharedPrefs.getString(preferenceValue, defaultValue);
+        } catch (RuntimeException e) {
+            return defaultValue;
+        }
     }
 }
