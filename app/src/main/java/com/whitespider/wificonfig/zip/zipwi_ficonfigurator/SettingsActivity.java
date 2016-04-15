@@ -10,10 +10,15 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.*;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -131,6 +136,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
+            LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
+            Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            root.addView(bar, 0); // insert at top
+            bar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setIcon(R.drawable.zip_logo_icon);
