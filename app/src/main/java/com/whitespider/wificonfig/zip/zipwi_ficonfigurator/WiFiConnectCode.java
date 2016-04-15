@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -56,13 +57,22 @@ public class WiFiConnectCode {
         WifiManager wifiManager = (WifiManager) mFragment.getActivity().getSystemService(Context.WIFI_SERVICE);
         WifiConfiguration config = new WifiConfiguration();
         config.SSID = convertToQuotedString(wiFiItem.ssid);
-        config.preSharedKey = convertToQuotedString(networkPass); //String.format("\"{0}\"", networkPass);
-        config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        if("Open".equalsIgnoreCase(wiFiItem.securityType)) {
+            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+        } else {
+            config.preSharedKey = convertToQuotedString(networkPass); //String.format("\"{0}\"", networkPass);
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        }
 
         int networkId = wifiManager.addNetwork(config);
-        // Connect to network by disabling others.
-        wifiManager.enableNetwork(networkId, true);
-        wifiManager.saveConfiguration();
+        if(networkId == -1) {
+            Toast.makeText(mFragment.getActivity(), "Could not add " + wiFiItem.ssid, Toast.LENGTH_SHORT).show();
+        } else {
+            // Connect to network by disabling others.
+            wifiManager.enableNetwork(networkId, true);
+            wifiManager.saveConfiguration();
+        }
         wifiManager.reconnect();
     }
 
@@ -159,9 +169,7 @@ public class WiFiConnectCode {
                 }
             } else if (action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
                 if (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
-//                    if(connectionInfo.getBSSID() == null) {
-//                        ((AppCompatTextView)view).setText(wiFiItem.ssid);
-//                    }
+                    return;
                 }
             } else {
                 return;

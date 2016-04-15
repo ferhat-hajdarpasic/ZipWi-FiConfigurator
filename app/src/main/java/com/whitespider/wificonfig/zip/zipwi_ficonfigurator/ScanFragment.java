@@ -112,7 +112,11 @@ public class ScanFragment extends Fragment implements IConfigureWiFiActivity {
     };
 
     private void connect(WiFiContent.WiFiItem wiFiItem, View view) {
-        showCollectPasswordDialog(wiFiItem, view);
+        if("Open".equalsIgnoreCase(wiFiItem.securityType)) {
+            connectCode.connect(wiFiItem, "", view);
+        } else {
+            showCollectPasswordDialog(wiFiItem, view);
+        }
     }
 
     protected void showCollectPasswordDialog(final WiFiContent.WiFiItem wiFiItem, final View view) {
