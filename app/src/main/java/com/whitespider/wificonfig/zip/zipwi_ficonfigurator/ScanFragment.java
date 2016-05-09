@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ public class ScanFragment extends Fragment implements IConfigureWiFiActivity {
     private WiFiConnectCode connectCode;
     private WiFiBroadcastReceiver mWifiScanReceiver;
     private ProgressBar wifiCollectProgressBar;
+    private ConnectionStateIndicator connectionStateIndicator;
 
     public ScanFragment() {
     }
@@ -64,6 +66,7 @@ public class ScanFragment extends Fragment implements IConfigureWiFiActivity {
 
         connectCode = new WiFiConnectCode(this, mWiFiNetworksListView);
         startScan();
+        connectionStateIndicator = new ConnectionStateIndicator(getActivity(), mWiFiNetworksListView, 1000);
         return view;
     }
 

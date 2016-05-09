@@ -3,6 +3,7 @@ package com.whitespider.wificonfig.zip.zipwi_ficonfigurator;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -17,11 +18,35 @@ import java.util.ArrayList;
  */
 public class WiFiNetworksListViewAdapter extends ArrayAdapter<WiFiContent.WiFiItem> {
     private static final String TAG = "WiFiNet...ViewAdapter";
-    private WiFiContent.WiFiItem mselectedWiFiItem;
+    public static final String RED = "#FF3336";
+    public static final String GREEN = "#04780F";
+    private WiFiContent.WiFiItem mSelectedWiFiItem;
     private String connectingState;
+    private int secondsSinceLastConnectionOk = 1000;
+    private final Handler connectionStatusHandler = new Handler();
+    public boolean blink;
+    private String color = GREEN;
 
     public WiFiNetworksListViewAdapter(Context context, int resource, ArrayList<WiFiContent.WiFiItem> wiFiItems) {
         super(context, resource, wiFiItems);
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                if(secondsSinceLastConnectionOk < 2) {
+                    WiFiNetworksListViewAdapter.this.blink = !WiFiNetworksListViewAdapter.this.blink;
+                    WiFiNetworksListViewAdapter.this.color = GREEN;
+                } else if(secondsSinceLastConnectionOk < 5) {
+                    WiFiNetworksListViewAdapter.this.blink = false;
+                    WiFiNetworksListViewAdapter.this.color = GREEN;
+                } else {
+                    WiFiNetworksListViewAdapter.this.blink = false;
+                    WiFiNetworksListViewAdapter.this.color = RED;
+                }
+                connectionStatusHandler.postDelayed(this, 1000);
+            }
+        };
+        connectionStatusHandler.postDelayed(runnable, 1000);
     }
 
     @Override
@@ -35,15 +60,19 @@ public class WiFiNetworksListViewAdapter extends ArrayAdapter<WiFiContent.WiFiIt
         final String ssid = thisItem.ssid;
         if(connectionInfoSSID.equalsIgnoreCase(ssid)) {
             connectingState = connectionInfo.getSupplicantState().name();
-            this.mselectedWiFiItem = thisItem;
+            this.mSelectedWiFiItem = thisItem;
         }
 
-        if(this.mselectedWiFiItem != null) {
-            if((connectingState != null) && thisItem.equals(mselectedWiFiItem)) {
-                view.setText(Html.fromHtml(mselectedWiFiItem.ssid + " - <font color=\"#E0711C\">" + connectingState + "</font>"));
+        if(this.mSelectedWiFiItem != null) {
+            if((connectingState != null) && thisItem.equals(mSelectedWiFiItem)) {
+                String connectionState = " - <font color=\"" + this.color + "\">" + connectingState + "</font>";
+                if(this.blink) {
+                    connectionState = "";
+                }
+                view.setText(Html.fromHtml(mSelectedWiFiItem.ssid + connectionState));
             }
         }
-        Log.d(TAG, "mselectedWiFiItem=" + view.getText().toString());
+        Log.d(TAG, "mSelectedWiFiItem=" + view.getText().toString());
         return view;
     }
 
@@ -53,13 +82,19 @@ public class WiFiNetworksListViewAdapter extends ArrayAdapter<WiFiContent.WiFiIt
     }
 
     public void setSelectedWiFiItem(WiFiContent.WiFiItem wiFiItem) {
-        this.mselectedWiFiItem = wiFiItem;
+        this.mSelectedWiFiItem = wiFiItem;
         this.connectingState = null;
+        this.secondsSinceLastConnectionOk = 1000;
         this.notifyDataSetChanged();
     }
 
     public void setConnectingState(String connectingState) {
         this.connectingState = connectingState;
         this.notifyDataSetChanged();
+    }
+
+    public void onConnectionCheck(int secondsSinceLastConnectionOk, WiFiContent.WiFiItem wiFiItem) {
+        setSelectedWiFiItem(wiFiItem);
+        this.secondsSinceLastConnectionOk = Math.abs(secondsSinceLastConnectionOk);
     }
 }

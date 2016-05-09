@@ -62,9 +62,6 @@ public class WiFiNetworksListView extends android.widget.ListView {
         return filteredWiFiNetworks;
     }
 
-    public void indicatedConnectedWiFi(WiFiContent.WiFiItem wiFiItem) {
-    }
-
     public void indicateConnectingState(WifiInfo connectionInfo) {
         arrayAdapter.setConnectingState(connectionInfo.getSupplicantState().toString());
     }
@@ -75,5 +72,14 @@ public class WiFiNetworksListView extends android.widget.ListView {
 
     public void setSelectedWiFiItem(WiFiContent.WiFiItem wiFiItem) {
         arrayAdapter.setSelectedWiFiItem(wiFiItem);
+    }
+
+    public void connectionOk(int secondsSinceLastConnectionOk, String connectionInfoSSID) {
+        for(int i = 0; i < arrayAdapter.getCount(); i++) {
+            WiFiContent.WiFiItem wifiItem = arrayAdapter.getItem(i);
+            if(wifiItem.ssid.equalsIgnoreCase(connectionInfoSSID)) {
+                arrayAdapter.onConnectionCheck(secondsSinceLastConnectionOk, wifiItem);
+            }
+        }
     }
 }

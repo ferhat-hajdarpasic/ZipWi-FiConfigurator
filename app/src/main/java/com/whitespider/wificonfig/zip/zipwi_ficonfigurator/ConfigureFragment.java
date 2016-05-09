@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigureFragment extends Fragment implements IConfigureWiFiActivity {
-    public static final String CONFIGURE_WIFI_EVENT = "configure-wifi-event";
-    public static final String CONFIGURE_WFI_RESULT_MESSAGE = "CONFIGURE_WFI_RESULT_MESSAGE";
     private ArrayAdapter<WiFiContent.WiFiItem> arrayAdapter;
     private ListView wiFiDomainsListView;
     private TextView hiddenDomain;
@@ -196,15 +194,19 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
         });
         wiFiPassword.addTextChangedListener(textWatcher);
         hiddenDomain.addTextChangedListener(textWatcher);
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                broadcastProgressBar.setVisibility(View.GONE);
-                String message = intent.getStringExtra(CONFIGURE_WFI_RESULT_MESSAGE);
-                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-            }
-        };
-
+        {
+            broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    broadcastProgressBar.setVisibility(View.GONE);
+                    String message = intent.getStringExtra(TcpCommunicationIntentService.CONFIGURE_WFI_RESULT);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                }
+            };
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                    broadcastReceiver,
+                    new IntentFilter(TcpCommunicationIntentService.CONFIGURE_WIFI_EVENT));
+        }
         CheckBox checkboxConfigureProxy = (CheckBox)view.findViewById(R.id.checkboxConfigureProxy);
         configureProxySection = (ViewGroup)view.findViewById(R.id.configureProxySection);
         checkboxConfigureProxy.setOnClickListener(new View.OnClickListener() {
@@ -217,9 +219,7 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
                 }
             }
         });
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
-                broadcastReceiver,
-                new IntentFilter(CONFIGURE_WIFI_EVENT));
+
         return view;
     }
 
@@ -334,6 +334,7 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
 
     public void submit(View view) {
         final Intent intent = new Intent(getActivity(), TcpCommunicationIntentService.class);
+        intent.putExtra(TcpCommunicationIntentService.ACTION, TcpCommunicationIntentService.CONFIGURE_WIFI_ACTION);
         String domain = hiddenDomain.getText().toString().trim();
         if(domain.isEmpty()) {
             domain = arrayAdapter.getItem(selectedPosition).ssid;
