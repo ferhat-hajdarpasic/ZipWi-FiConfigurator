@@ -31,6 +31,7 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
     private RadioButton radioButtonSecurityTypeOpen;
     private RadioButton radioButtonSecurityTypeWep;
     private RadioButton radioButtonSecurityTypeWpa;
+    private RadioButton defaultHiddenRadioButton;
     private Button submitButton;
     private int selectedPosition = -1;
     private BroadcastReceiver broadcastReceiver;
@@ -69,9 +70,16 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
         hiddenDomain = (TextView) view.findViewById(R.id.editHiddenDomainText);
         createAndInitConfigPassword(view);
         createAndInitProxy(view);
+
         radioButtonSecurityTypeOpen = (RadioButton)view.findViewById(R.id.securityTypeOpen);
         radioButtonSecurityTypeWep = (RadioButton)view.findViewById(R.id.securityTypeWep);
         radioButtonSecurityTypeWpa = (RadioButton)view.findViewById(R.id.securityTypeWpa);
+        defaultHiddenRadioButton = (RadioButton)view.findViewById(R.id.defaultHiddenRadioButton);
+//        RadioGroup securityTypeRadioGroup = (RadioGroup) view.findViewById(R.id.securityTypeRadioGroup);
+//        securityTypeRadioGroup.addView(radioButtonSecurityTypeOpen);
+//        securityTypeRadioGroup.addView(radioButtonSecurityTypeWep);
+//        securityTypeRadioGroup.addView(radioButtonSecurityTypeWpa);
+
         submitButton = (Button)view.findViewById(R.id.submitButton);
         wifiCollectProgressBar = (ProgressBar)view.findViewById(R.id.wifiCollectProgressBar);
         broadcastProgressBar = (ProgressBar)view.findViewById(R.id.broadcastProgressBar);
@@ -150,6 +158,7 @@ public class ConfigureFragment extends Fragment implements IConfigureWiFiActivit
                         radioButtonSecurityTypeOpen.setChecked(false);
                         radioButtonSecurityTypeWep.setChecked(false);
                         radioButtonSecurityTypeWpa.setChecked(false);
+                        defaultHiddenRadioButton.setChecked(true);
                     }
                     //listView.setSelection(-1);
                 }

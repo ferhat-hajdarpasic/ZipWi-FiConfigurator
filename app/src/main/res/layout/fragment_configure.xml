@@ -110,7 +110,8 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="110dp"
                                     android:focusable="true"
-                                    android:focusableInTouchMode="true">
+                                    android:focusableInTouchMode="true"
+                                    android:id="@+id/securityTypeRadioGroup">
 
                                 <RadioButton
                                         android:layout_width="wrap_content"
@@ -132,6 +133,13 @@
                                         android:text="WEP"
                                         android:id="@+id/securityTypeWep"
                                         android:checked="false" />
+
+                                <RadioButton
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="New RadioButton"
+                                        android:id="@+id/defaultHiddenRadioButton"
+                                        android:visibility="invisible"/>
                             </RadioGroup>
                         </LinearLayout>
 

@@ -74,12 +74,11 @@ public class WiFiNetworksListView extends android.widget.ListView {
         arrayAdapter.setSelectedWiFiItem(wiFiItem);
     }
 
-    public void connectionOk(int secondsSinceLastConnectionOk, String connectionInfoSSID) {
-        for(int i = 0; i < arrayAdapter.getCount(); i++) {
-            WiFiContent.WiFiItem wifiItem = arrayAdapter.getItem(i);
-            if(wifiItem.ssid.equalsIgnoreCase(connectionInfoSSID)) {
-                arrayAdapter.onConnectionCheck(secondsSinceLastConnectionOk, wifiItem);
-            }
-        }
+    public WiFiContent.WiFiItem getSelectedWiFiItem() {
+        return arrayAdapter.getSelectedWiFiItem();
+    }
+
+    public void connectionOk(int secondsSinceLastConnectionOk) {
+        arrayAdapter.onConnectionCheck(secondsSinceLastConnectionOk);
     }
 }

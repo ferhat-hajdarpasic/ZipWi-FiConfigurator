@@ -23,7 +23,7 @@ public class ConnectionStateIndicator {
     private final FragmentActivity activity;
     private final WiFiNetworksListView mWiFiNetworksListView;
     private final int updatePeriodMilliSeconds;
-    private long lastZipMessageTimestamp = -1;
+    private long lastTimeConnectionWasOk = -1;
     public ConnectionStateIndicator(FragmentActivity activity, WiFiNetworksListView mWiFiNetworksListView, final int updatePeriodMilliSeconds) {
         this.activity = activity;
         this.mWiFiNetworksListView = mWiFiNetworksListView;
@@ -31,29 +31,31 @@ public class ConnectionStateIndicator {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                sendZipMessage();
+                //sendZipMessage();
                 updateConnectionState();
                 connectionStatusHandler.postDelayed(this, updatePeriodMilliSeconds);
             }
         };
         connectionStatusHandler.postDelayed(runnable, updatePeriodMilliSeconds);
 
-        {
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    String message = intent.getStringExtra(TcpCommunicationIntentService.CHECK_CONNECTION_RESULT);
-                    lastZipMessageTimestamp = System.currentTimeMillis();
-                    Log.d(TAG, "Received ZIP response hence connection is OK.");
-                    //Toast.makeText(ConnectionStateIndicator.this.activity, message, Toast.LENGTH_LONG).show();
-                }
-            };
-            LocalBroadcastManager.getInstance(ConnectionStateIndicator.this.activity).registerReceiver(
-                    broadcastReceiver,
-                    new IntentFilter(TcpCommunicationIntentService.CHECK_CONNECTION_EVENT));
-        }
-
+        //registerZipMessageListener();
     }
+
+    private void registerZipMessageListener() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String message = intent.getStringExtra(TcpCommunicationIntentService.CHECK_CONNECTION_RESULT);
+                lastTimeConnectionWasOk = System.currentTimeMillis();
+                Log.d(TAG, "Received ZIP response hence connection is OK.");
+                //Toast.makeText(ConnectionStateIndicator.this.activity, message, Toast.LENGTH_LONG).show();
+            }
+        };
+        LocalBroadcastManager.getInstance(ConnectionStateIndicator.this.activity).registerReceiver(
+                broadcastReceiver,
+                new IntentFilter(TcpCommunicationIntentService.CHECK_CONNECTION_EVENT));
+    }
+
     private void sendZipMessage() {
         WifiManager mWifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         final WifiInfo connectionInfo = mWifiManager.getConnectionInfo();
@@ -69,11 +71,23 @@ public class ConnectionStateIndicator {
     }
 
     private void updateConnectionState() {
-        int secondsSinceLastZipMessage = (int)(System.currentTimeMillis() - lastZipMessageTimestamp)/1000;
+        final String connectionInfoSSID = getConnectionWiFiName();
+        WiFiContent.WiFiItem selectedWiFiItem = mWiFiNetworksListView.getSelectedWiFiItem();
+        if((connectionInfoSSID != null) && (connectionInfoSSID.trim().length() > 0)) {
+            if(selectedWiFiItem != null) {
+                if (connectionInfoSSID.equalsIgnoreCase(selectedWiFiItem.ssid)) {
+                    lastTimeConnectionWasOk = System.currentTimeMillis();
+                }
+            }
+        }
+
+        int secondsSinceLastTimeConnectionOk = (int)(System.currentTimeMillis() - lastTimeConnectionWasOk)/1000;
+        mWiFiNetworksListView.connectionOk(secondsSinceLastTimeConnectionOk);
+    }
+
+    private String getConnectionWiFiName() {
         WifiManager mWifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         final WifiInfo connectionInfo = mWifiManager.getConnectionInfo();
-        final String connectionInfoSSID = WiFiConnectCode.removeQuotedString(connectionInfo.getSSID());
-
-        mWiFiNetworksListView.connectionOk(secondsSinceLastZipMessage, connectionInfoSSID);
+        return WiFiConnectCode.removeQuotedString(connectionInfo.getSSID());
     }
 }

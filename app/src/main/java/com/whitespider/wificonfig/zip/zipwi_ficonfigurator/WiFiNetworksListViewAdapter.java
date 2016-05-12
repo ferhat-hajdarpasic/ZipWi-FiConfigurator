@@ -88,13 +88,17 @@ public class WiFiNetworksListViewAdapter extends ArrayAdapter<WiFiContent.WiFiIt
         this.notifyDataSetChanged();
     }
 
+    public WiFiContent.WiFiItem getSelectedWiFiItem() {
+        return this.mSelectedWiFiItem;
+    }
+
     public void setConnectingState(String connectingState) {
         this.connectingState = connectingState;
         this.notifyDataSetChanged();
     }
 
-    public void onConnectionCheck(int secondsSinceLastConnectionOk, WiFiContent.WiFiItem wiFiItem) {
-        setSelectedWiFiItem(wiFiItem);
+    public void onConnectionCheck(int secondsSinceLastConnectionOk) {
         this.secondsSinceLastConnectionOk = Math.abs(secondsSinceLastConnectionOk);
+        this.notifyDataSetChanged();
     }
 }
