@@ -21,9 +21,11 @@ public class WiFiBroadcastReceiver extends BroadcastReceiver {
     }
 
     public void startScan() {
-        activity.registerReceiver(this, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        WifiManager mWifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
-        mWifiManager.startScan();
+        if(MainActivity.wifiPermissionIsGranted) {
+            activity.registerReceiver(this, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            WifiManager mWifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+            mWifiManager.startScan();
+        }
     }
 
     public void stopScan() {

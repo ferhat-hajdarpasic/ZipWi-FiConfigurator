@@ -82,20 +82,22 @@ public class ScanFragment extends Fragment implements IConfigureWiFiActivity {
     }
 
     public void startScan() {
-        mBtnScan.setEnabled(false);
-        mWiFiNetworksListView.clear();
-        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        boolean success = wifiManager.setWifiEnabled(true);
-        if(success) {
-            success = wifiManager.disconnect();
-            if(success) {
-                mWifiScanReceiver.startScan();
-                wifiCollectProgressBar.setVisibility(View.VISIBLE);
+        if(MainActivity.wifiPermissionIsGranted) {
+            mBtnScan.setEnabled(false);
+            mWiFiNetworksListView.clear();
+            WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+            boolean success = wifiManager.setWifiEnabled(true);
+            if (success) {
+                success = wifiManager.disconnect();
+                if (success) {
+                    mWifiScanReceiver.startScan();
+                    wifiCollectProgressBar.setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(getActivity(), "Could not disconnect from current WiFi", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(getActivity(), "Could not disconnect from current WiFi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Could not start WiFi", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(getActivity(), "Could not start WiFi", Toast.LENGTH_SHORT).show();
         }
     }
 

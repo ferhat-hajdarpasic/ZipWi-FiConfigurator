@@ -26,7 +26,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
+    public static final int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -41,10 +41,28 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    public static boolean wifiPermissionIsGranted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                wifiPermissionIsGranted = true;
+            } else {
+                requestPermissions(new String[] {
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                }, MainActivity.PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
+            }
+        } else {
+            wifiPermissionIsGranted = true;
+        }
+        if(wifiPermissionIsGranted) {
+            startApplication();
+        }
+    }
+
+    private void startApplication() {
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,24 +81,14 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] {
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                }, PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
-            }
-        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Do something with granted permission
-            //mWifiListener.getScanningResults();
+            wifiPermissionIsGranted = true;
+            startApplication();
         }
     }
 
